@@ -1,7 +1,26 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
+using MvcBlog.DbRepository;
+using MvcBlog.DbRepository.Interfaces;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+var config = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = new PathString("/Account/Login");
+    });
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IRepositoryContextFactory, RepositoryContextFactory>();
 
 var app = builder.Build();
 
@@ -13,15 +32,27 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseSession();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var factory = services.GetRequiredService<IRepositoryContextFactory>();
+
+    factory.CreateDbContext(config.GetConnectionString("DefaultConnection")).Database.Migrate();
+}
 
 app.Run();
