@@ -28,9 +28,14 @@ namespace MvcBlog.DbRepository.Implementations
                     .Include(p => p.Tags)
                     .FirstOrDefaultAsync(p => p.Id == post.Id);
 
-                if (p is not null)
+                var t = await context.Tags
+                    .Include(t => t.Posts)
+                    .FirstOrDefaultAsync(t => t.Name == tag.Name);
+
+                if (p is not null && t is not null)
                 {
-                    p.Tags.Add(tag);
+                    p.Tags.Add(t);
+                    t.Posts.Add(p);
                 }
 
                 await context.SaveChangesAsync();
@@ -78,7 +83,7 @@ namespace MvcBlog.DbRepository.Implementations
             return new List<Post>();
         }
 
-        public async Task<IEnumerable<Post>> GetAllByCategoryAsync(Сategory сategory)
+        public async Task<IEnumerable<Post>> GetAllByCategoryAsync(Category сategory)
         {
             List<Post> posts = null;
 
@@ -86,12 +91,18 @@ namespace MvcBlog.DbRepository.Implementations
             {
                 if (context.Posts.Any())
                 {
-                    posts = await context.Posts
-                        .Include(p => p.Author)
-                        .Include(p => p.Tags)
-                        .Include(p => p.Сategory)
-                        .Where(p => p.Сategory == сategory)
-                        .ToListAsync();
+                    var c = await context.Сategories
+                        .FirstOrDefaultAsync(c => c.Name == сategory.Name);
+
+                    if (c is not null)
+                    {
+                        posts = await context.Posts
+                            .Include(p => p.Author)
+                            .Include(p => p.Tags)
+                            .Include(p => p.Сategory)
+                            .Where(p => p.Сategory == c)
+                            .ToListAsync();
+                    }
                 }
             }
 
@@ -111,12 +122,19 @@ namespace MvcBlog.DbRepository.Implementations
             {
                 if (context.Posts.Any())
                 {
-                    posts = await context.Posts
-                        .Include(p => p.Author)
-                        .Include(p => p.Tags)
-                        .Include(p => p.Сategory)
-                        .Where(p => p.Tags.Contains(tag))
-                        .ToListAsync();
+                    var t = await context.Tags
+                        .Include(t => t.Posts)
+                        .FirstOrDefaultAsync(t => t.Name == tag.Name);
+
+                    if (t is not null)
+                    {
+                        posts = await context.Posts
+                            .Include(p => p.Author)
+                            .Include(p => p.Tags)
+                            .Include(p => p.Сategory)
+                            .Where(p => p.Tags.Contains(t))
+                            .ToListAsync();
+                    }
                 }
             }
 

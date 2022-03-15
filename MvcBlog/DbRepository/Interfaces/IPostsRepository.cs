@@ -6,7 +6,7 @@ namespace MvcBlog.DbRepository.Interfaces
     {
         public Task<IEnumerable<Post>> GetAllAsync();
         public Task<Post> GetByIdAsync(int id);
-        public Task<IEnumerable<Post>> GetAllByCategoryAsync(Сategory сategory);
+        public Task<IEnumerable<Post>> GetAllByCategoryAsync(Category сategory);
         public Task<IEnumerable<Post>> GetAllByTagAsync(Tag tag);
 
         public Task AddAsync(Post post);

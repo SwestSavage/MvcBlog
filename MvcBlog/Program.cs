@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using MvcBlog.DbRepository;
+using MvcBlog.DbRepository.Implementations;
 using MvcBlog.DbRepository.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,26 @@ builder.Services.AddSession();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IRepositoryContextFactory, RepositoryContextFactory>();
+
+builder.Services.AddScoped<IUsersRepository>(
+    provider => new UsersRepository(config.GetConnectionString("DefaultConnection"),
+    provider.GetService<IRepositoryContextFactory>())
+    );
+
+builder.Services.AddScoped<IPostsRepository>(
+    provider => new PostsRepository(config.GetConnectionString("DefaultConnection"),
+    provider.GetService<IRepositoryContextFactory>())
+    );
+
+builder.Services.AddScoped<ICategoriesRepository>(
+    provider => new CategoriesRepository(config.GetConnectionString("DefaultConnection"),
+    provider.GetService<IRepositoryContextFactory>())
+    );
+
+builder.Services.AddScoped<ITagsRepository>(
+    provider => new TagsRepository(config.GetConnectionString("DefaultConnection"),
+    provider.GetService<IRepositoryContextFactory>())
+    );
 
 var app = builder.Build();
 
