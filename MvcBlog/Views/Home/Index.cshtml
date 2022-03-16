@@ -9,12 +9,14 @@
     <p>Каталог статей.</p>
 </div>
 
-<div class="card-group">
+<div>
     @foreach (var post in Model)
     {
         <div class="card">
             <div class="card-body">
-                <img src="@post.ImagePath" class="card-img-top" alt="Post @post.Name image">
+                <div class="text-center">
+                    <img src="@post.ImagePath" class="card-img-top" alt="Post @post.Name image" style="width:200px; height:250px">
+                </div>
                 <h5 class="card-title">@post.Name</h5>
                 <p class="card-text">@post.ShortDescription</p>
                 <p class="card-text text-muted">
