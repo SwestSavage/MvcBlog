@@ -1,0 +1,56 @@
+﻿@model MvcBlog.Models.PostViewModel
+@{
+    var cats = ViewBag.Categories;
+    var tags = ViewBag.Tags;
+}
+
+<div>
+    <form asp-action="CreatePost" asp-controller="Admin" method="post">
+        <div class="validation" asp-validation-summary="ModelOnly"></div>
+        <div>
+            <div>
+                <label asp-for="Name">Введите название статьи</label><br />
+                <input type="text" asp-for="Name" />
+                <span asp-validation-for="Name" />
+            </div>
+            <div>
+                <label asp-for="ShortDescription">Введите краткое описание</label><br />
+                <input type="text" asp-for="ShortDescription" />
+                <span asp-validation-for="ShortDescription" />
+            </div>
+            <div>
+                <label asp-for="Description">Введите текст статьи</label><br />
+                <textarea asp-for="Description"></textarea>
+                <span asp-validation-for="Description" />
+            </div>
+            <div>
+                <label asp-for="UploadedFile">Загрузить картинку</label><br />
+                <input type="file" asp-for="UploadedFile" />
+                <span asp-validation-for="UploadedFile" />
+            </div>
+            <div>
+                <label asp-for="СategoryId">Введите краткое описание</label><br />
+                <select asp-for="СategoryId">
+                    @foreach (var c in cats)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="СategoryId" />
+            </div>
+            <div>
+                <label asp-for="TagsIds">Введите краткое описание</label><br />
+                <select multiple asp-for="TagsIds">
+                    @foreach (var t in tags)
+                    {
+                        <option value="@t.Id">@t.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="TagsIds" />
+            </div>
+            <div>
+                <input type="submit" value="Создать" class="btn btn-outline-dark"/>
+            </div>
+        </div>
+    </form>
+</div>

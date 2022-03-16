@@ -1,0 +1,45 @@
+﻿@model IEnumerable<MvcBlog.Models.Post>
+
+@{
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Панель администратора.</p>
+</div>
+
+<div class="text-center">
+    @using (Html.BeginForm("CreatePost", "Admin", FormMethod.Get))
+    {        
+        <input type="submit" value="Написать пост" class="btn btn-primary" />
+    }
+</div>
+
+<div class="card-group">
+    @foreach (var post in Model)
+    {
+        <div class="card">
+            <div class="card-body">
+                <img src="@post.ImagePath" class="card-img-top" alt="Post @post.Name image">
+                <h5 class="card-title">@post.Name</h5>
+                <p class="card-text">@post.ShortDescription</p>
+                <p class="card-text text-muted">
+                    @foreach(var tag in post.Tags)
+                    {
+                        <span>@tag.Name</span>
+                    }
+                </p>
+                @using (Html.BeginForm("UpdatePost", "Admin", FormMethod.Get))
+                {
+                    <input type="hidden" value=@post.Id name="postId" />
+                    <input type="submit" value="Изменить" class="btn btn-primary" />
+                }
+                @using (Html.BeginForm("DeletePost", "Admin", FormMethod.Post))
+                {
+                    <input type="hidden" value=@post.Id name="postId" />
+                    <input type="submit" value="Удалить" class="btn btn-danger" />
+                }
+            </div>
+        </div>
+    }
+</div>

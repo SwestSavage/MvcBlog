@@ -14,7 +14,24 @@ namespace MvcBlog.DbRepository.Implementations
         {
             using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
             {
-                await context.Posts.AddAsync(post);
+                List<Tag> tags = new();
+
+                foreach (var tId in post.Tags)
+                {
+                    var t = await context.Tags.Include(t => t.Posts).FirstOrDefaultAsync(t => t.Id == tId.Id);
+                    tags.Add(t);
+                }
+
+                await context.Posts.AddAsync(new Post
+                {
+                    Author = await context.Users.FirstOrDefaultAsync(u => u.Login == post.Author.Login),
+                    Name = post.Name,
+                    ShortDescription = post.ShortDescription,
+                    Description = post.Description,
+                    ImagePath = post.ImagePath,
+                    Сategory = await context.Сategories.FirstOrDefaultAsync(c => c.Id == post.Сategory.Id),
+                    Tags = tags
+                });
 
                 await context.SaveChangesAsync();
             }

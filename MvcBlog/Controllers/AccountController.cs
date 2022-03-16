@@ -44,7 +44,7 @@ namespace MvcBlog.Controllers
                         Login = model.Login,
                         Password = passwordHash,
                         Name = model.Name,
-                        IsAdmin = false
+                        IsAdmin = true
                     });
 
                     await Authenticate(model.Login);

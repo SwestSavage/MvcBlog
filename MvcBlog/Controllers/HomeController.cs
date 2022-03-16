@@ -10,20 +10,30 @@ namespace MvcBlog.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IUsersRepository _usersRepository;
+        private readonly IPostsRepository _postsRepository;
 
         public HomeController(ILogger<HomeController> logger,
-            IUsersRepository usersRepository)
+            IUsersRepository usersRepository,
+            IPostsRepository postsRepository)
         {
             _logger = logger;
             _usersRepository = usersRepository;
+            _postsRepository = postsRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            ViewData["LoggedIn"] = Convert.ToString(User.Identity.Name);
+            ViewData["LoggedIn"] = User.Identity.Name;
             User user = HttpContext.Session.GetObject<User>("user");
 
-            return View();
+            if (ViewData["LoggedIn"] is not null)
+            {
+                return RedirectToAction("AdminPanel", "Admin");
+            }
+
+            var posts = await _postsRepository.GetAllAsync();
+
+            return View(posts);
         }
 
         public IActionResult Privacy()
