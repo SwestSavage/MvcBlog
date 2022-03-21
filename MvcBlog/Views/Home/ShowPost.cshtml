@@ -1,0 +1,20 @@
+﻿@model MvcBlog.Models.Post
+@{
+}
+
+<div class="blog-post">
+    <h2 class="blog-post-titel">@Model.Name</h2>
+    <strong class="d-inline-block mb-2 text-primary">@Model.Сategory.Name</strong>
+    <p class="blog-post-meta">Автор: @Model.Author.Login</p>
+    <img src="@Model.ImagePath"/>   
+    <p>@Model.Description</p>
+    <div class="mb-1 text-muted">
+        <strong>Теги:</strong>
+        <p>
+            @foreach (var t in Model.Tags)
+            {
+                <span>#@t.Name</span>
+            }
+        </p>
+    </div>
+</div>

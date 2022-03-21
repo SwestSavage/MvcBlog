@@ -35,6 +35,13 @@ namespace MvcBlog.Controllers
             return View(posts);
         }
 
+        public async Task<IActionResult> ShowPost(int id)
+        {
+            var post = await _postsRepository.GetByIdAsync(id);
+
+            return View(post);
+        }
+
         public IActionResult Privacy()
         {
             return View();

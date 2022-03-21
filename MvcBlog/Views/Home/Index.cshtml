@@ -5,8 +5,7 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Каталог статей.</p>
+    <h1 class="display-4">Каталог статей</h1>
 </div>
 
 <div>
@@ -16,15 +15,17 @@
             <div class="card-body">
                 <div class="text-center">
                     <img src="@post.ImagePath" class="card-img-top" alt="Post @post.Name image" style="width:200px; height:250px">
-                </div>
-                <h5 class="card-title">@post.Name</h5>
-                <p class="card-text">@post.ShortDescription</p>
-                <p class="card-text text-muted">
-                    @foreach(var tag in post.Tags)
-                    {
-                        <span>@tag.Name</span>
-                    }
-                </p>
+                    <h5 class="card-title">
+                        <a class="text-dark" asp-action="ShowPost" asp-controller="Home" asp-route-id="@post.Id">@post.Name</a>
+                    </h5>  
+                    <p class="card-text">@post.ShortDescription</p>
+                    <p class="card-text text-muted">
+                        @foreach(var tag in post.Tags)
+                        {
+                            <span>#@tag.Name</span>
+                        }
+                    </p>
+                </div>               
             </div>
         </div>
     }

@@ -4,8 +4,7 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Панель администратора.</p>
+    <h1 class="display-4">Панель администратора</h1>
 </div>
 
 <div class="text-center">
@@ -22,25 +21,25 @@
             <div class="card-body">
                 <div class="text-center">
                     <img src="@post.ImagePath" class="card-img-top" alt="Post @post.Name image" style="width:200px; height:250px">
-                </div>
-                <h5 class="card-title">@post.Name</h5>
-                <p class="card-text">@post.ShortDescription</p>
-                <p class="card-text text-muted">
-                    @foreach(var tag in post.Tags)
+                    <h5 class="card-title">@post.Name</h5>
+                    <p class="card-text">@post.ShortDescription</p>
+                    <p class="card-text text-muted">
+                        @foreach(var tag in post.Tags)
+                        {
+                            <span>@tag.Name</span>
+                        }
+                    </p>
+                    @using (Html.BeginForm("UpdatePost", "Admin", FormMethod.Get))
                     {
-                        <span>@tag.Name</span>
+                        <input type="hidden" value=@post.Id name="postId" />
+                        <input type="submit" value="Изменить" class="btn btn-primary" />
                     }
-                </p>
-                @using (Html.BeginForm("UpdatePost", "Admin", FormMethod.Get))
-                {
-                    <input type="hidden" value=@post.Id name="postId" />
-                    <input type="submit" value="Изменить" class="btn btn-primary" />
-                }
-                @using (Html.BeginForm("DeletePost", "Admin", FormMethod.Post))
-                {
-                    <input type="hidden" value=@post.Id name="postId" />
-                    <input type="submit" value="Удалить" class="btn btn-danger" />
-                }
+                    @using (Html.BeginForm("DeletePost", "Admin", FormMethod.Post))
+                    {
+                        <input type="hidden" value=@post.Id name="postId" />
+                        <input type="submit" value="Удалить" class="btn btn-danger" />
+                    }
+                </div>               
             </div>
         </div>
     }
