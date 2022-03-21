@@ -23,10 +23,9 @@ namespace MvcBlog.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewData["LoggedIn"] = User.Identity.Name;
             User user = HttpContext.Session.GetObject<User>("user");
 
-            if (ViewData["LoggedIn"] is not null)
+            if (User.Identity.Name is not null)
             {
                 return RedirectToAction("AdminPanel", "Admin");
             }

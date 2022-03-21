@@ -64,6 +64,7 @@ namespace MvcBlog.DbRepository.Implementations
             using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
             {
                 var p = await context.Posts
+                    .Include(p => p.Сategory)
                     .Include(p => p.Tags)
                     .FirstOrDefaultAsync(p => p.Id == id);
 
@@ -214,6 +215,14 @@ namespace MvcBlog.DbRepository.Implementations
                         .Include(p => p.Сategory)
                         .FirstOrDefaultAsync(p => p.Id == post.Id);
 
+                List<Tag> tags = new();
+
+                foreach (var tId in post.Tags)
+                {
+                    var t = await context.Tags.Include(t => t.Posts).FirstOrDefaultAsync(t => t.Id == tId.Id);
+                    tags.Add(t);
+                }
+
                 if (p is not null)
                 {
                     if (!string.IsNullOrEmpty(post.Name)) p.Name = post.Name;
@@ -224,7 +233,9 @@ namespace MvcBlog.DbRepository.Implementations
 
                     if (!string.IsNullOrEmpty(post.ImagePath)) p.ImagePath = post.ImagePath;
 
-                    if (post.Сategory is not null) p.Сategory = post.Сategory;
+                    if (post.Сategory is not null) p.Сategory = await context.Сategories.FirstOrDefaultAsync(c => c.Id == post.Сategory.Id);
+
+                    if (post.Tags is not null) p.Tags = tags;
                 }
 
                 await context.SaveChangesAsync();
