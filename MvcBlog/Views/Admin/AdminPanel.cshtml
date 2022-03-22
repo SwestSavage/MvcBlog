@@ -4,13 +4,37 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Панель администратора</h1>
+    <h1 class="display-4">Панель администратора @User.Identity.Name</h1>
 </div>
 
 <div class="text-center">
     @using (Html.BeginForm("CreatePost", "Admin", FormMethod.Get))
     {        
         <input type="submit" value="Написать пост" class="btn btn-primary" />
+    }
+</div>
+
+<div>
+    <h5>Фильтровать по: </h5>
+    @using (Html.BeginForm("AdminPanel", "Admin"))
+    {
+        <p>
+            <select id="categoryId" name="categoryId">
+                <option value="0">Все категории</option>
+                @foreach (var c in ViewBag.Categories)
+                {
+                    <option value="@c.Id">@c.Name</option>
+                }
+            </select>
+            <select id="tagId" name="tagId">
+                <option value="0">Все теги</option>
+                @foreach (var t in ViewBag.Tags)
+                {
+                    <option value="@t.Id">@t.Name</option>
+                }
+            </select>
+            <input type="submit" value="фильтр" class="btn btn-secondary btn-sm"/>
+        </p>       
     }
 </div>
 
@@ -29,15 +53,23 @@
                             <span>@tag.Name</span>
                         }
                     </p>
-                    @using (Html.BeginForm("UpdatePost", "Admin", FormMethod.Get))
+                    <p class="card-text text-muted">
+                        @Html.ActionLink(post.Date.ToShortDateString(), "AdminPanel", "Admin", new { date = @post.Date.ToShortDateString() }, new { @class = "d-inline-block mb-2 font-weight-bolder text-primary text-decoration-none" })
+                        ,  автор: 
+                        @Html.ActionLink(post.Author.Login, "AdminPanel", "Admin", new { authorId = post.Author.Id }, new { @case = "d-inline-block mb-2 text-primary text-decoration-none"})
+                    </p>
+                    @if (User.Identity.Name == @post.Author.Login)
                     {
-                        <input type="hidden" value=@post.Id name="postId" />
-                        <input type="submit" value="Изменить" class="btn btn-primary" />
-                    }
-                    @using (Html.BeginForm("DeletePost", "Admin", FormMethod.Post))
-                    {
-                        <input type="hidden" value=@post.Id name="postId" />
-                        <input type="submit" value="Удалить" class="btn btn-danger" />
+                        @using (Html.BeginForm("UpdatePost", "Admin", FormMethod.Get))
+                        {
+                            <input type="hidden" value=@post.Id name="postId" />
+                            <input type="submit" value="Изменить" class="btn btn-primary" />
+                        }
+                        @using (Html.BeginForm("DeletePost", "Admin", FormMethod.Post))
+                        {
+                            <input type="hidden" value=@post.Id name="postId" />
+                            <input type="submit" value="Удалить" class="btn btn-danger" />
+                        }
                     }
                 </div>               
             </div>

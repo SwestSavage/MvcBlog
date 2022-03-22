@@ -9,22 +9,54 @@
 </div>
 
 <div>
+    <h5>Фильтровать по: </h5>
+    @using (Html.BeginForm("Index", "Home"))
+    {
+        <p>
+            <select id="categoryId" name="categoryId">
+                <option value="0">Все категории</option>
+                @foreach (var c in ViewBag.Categories)
+                {
+                    <option value="@c.Id">@c.Name</option>
+                }
+            </select>
+            <select id="tagId" name="tagId">
+                <option value="0">Все теги</option>
+                @foreach (var t in ViewBag.Tags)
+                {
+                    <option value="@t.Id">@t.Name</option>
+                }
+            </select>
+            <input type="submit" value="фильтр" class="btn btn-secondary btn-sm"/>
+        </p>       
+    }
+</div>
+
+<div>
     @foreach (var post in Model)
     {
         <div class="card">
             <div class="card-body">
                 <div class="text-center">
-                    <img src="@post.ImagePath" class="card-img-top" alt="Post @post.Name image" style="width:200px; height:250px">
+                    @if (!string.IsNullOrEmpty(post.ImagePath))
+                    {
+                        <img src="@post.ImagePath" class="card-img-top" alt="Post @post.Name image" style="width:200px; height:250px">
+                    }
                     <h5 class="card-title">
                         <a class="text-dark" asp-action="ShowPost" asp-controller="Home" asp-route-id="@post.Id">@post.Name</a>
                     </h5>  
                     <p class="card-text">@post.ShortDescription</p>
                     <p class="card-text text-muted">
-                        @foreach(var tag in post.Tags)
+                        @foreach (var tag in post.Tags)
                         {
                             <span>#@tag.Name</span>
                         }
                     </p>
+                    <p class="card-text text-muted">
+                        @Html.ActionLink(post.Date.ToShortDateString(), "Index", "Home", new { date = @post.Date.ToShortDateString() }, new { @class = "d-inline-block mb-2 font-weight-bolder text-primary text-decoration-none" })
+                        ,  автор: 
+                        @Html.ActionLink(post.Author.Login, "Index", "Home", new { authorId = post.Author.Id }, new { @case = "d-inline-block mb-2 text-primary text-decoration-none"})
+                        </p>
                 </div>               
             </div>
         </div>

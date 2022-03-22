@@ -6,8 +6,11 @@ namespace MvcBlog.DbRepository.Interfaces
     {
         public Task<IEnumerable<Post>> GetAllAsync();
         public Task<Post> GetByIdAsync(int id);
-        public Task<IEnumerable<Post>> GetAllByCategoryAsync(Category сategory);
-        public Task<IEnumerable<Post>> GetAllByTagAsync(Tag tag);
+        public Task<IEnumerable<Post>> GetAllByCategoryIdAsync(int сategoryId);
+        public Task<IEnumerable<Post>> GetAllByTagIdAsync(int tagId);
+        public Task<IEnumerable<Post>> GetAllByCategoryAndTagIds(int categoryId, int tagId);
+        public Task<IEnumerable<Post>> GetAllByDateAsync(DateTime date);
+        public Task<IEnumerable<Post>> GetAllByAuthorIdAsync(int authorId);
 
         public Task AddAsync(Post post);
         public Task UpdateAsync(Post post);

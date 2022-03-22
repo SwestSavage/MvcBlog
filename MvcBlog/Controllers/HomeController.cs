@@ -8,22 +8,23 @@ namespace MvcBlog.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IUsersRepository _usersRepository;
         private readonly IPostsRepository _postsRepository;
+        private readonly ICategoriesRepository _categoriesRepository;
+        private readonly ITagsRepository _tagsRepository;
 
-        public HomeController(ILogger<HomeController> logger,
-            IUsersRepository usersRepository,
-            IPostsRepository postsRepository)
+        public HomeController(IPostsRepository postsRepository,
+            ICategoriesRepository categoriesRepository,
+            ITagsRepository tagsRepository)
         {
-            _logger = logger;
-            _usersRepository = usersRepository;
             _postsRepository = postsRepository;
+            _categoriesRepository = categoriesRepository;
+            _tagsRepository = tagsRepository;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int categoryId = 0, int tagId = 0, string date = "", int authorId = 0)
         {
-            User user = HttpContext.Session.GetObject<User>("user");
+            ViewBag.Categories = await _categoriesRepository.GetAllAsync();
+            ViewBag.Tags = await _tagsRepository.GetAllAsync();
 
             if (User.Identity.Name is not null)
             {
@@ -31,6 +32,31 @@ namespace MvcBlog.Controllers
             }
 
             var posts = await _postsRepository.GetAllAsync();
+
+            if (categoryId != 0 && tagId == 0)
+            {
+                posts = await _postsRepository.GetAllByCategoryIdAsync(categoryId);
+            }
+
+            if (tagId != 0 && categoryId == 0)
+            {
+                posts = await _postsRepository.GetAllByTagIdAsync(tagId);
+            }
+
+            if (categoryId != 0 && tagId != 0)
+            {
+                posts = await _postsRepository.GetAllByCategoryAndTagIds(categoryId, tagId);
+            }
+
+            if (!string.IsNullOrEmpty(date))
+            {
+                posts = await _postsRepository.GetAllByDateAsync(Convert.ToDateTime(date));
+            }
+
+            if (authorId != 0)
+            {
+                posts = await _postsRepository.GetAllByAuthorIdAsync(authorId);
+            }
 
             return View(posts);
         }

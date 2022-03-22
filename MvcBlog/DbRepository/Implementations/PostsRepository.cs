@@ -30,7 +30,8 @@ namespace MvcBlog.DbRepository.Implementations
                     Description = post.Description,
                     ImagePath = post.ImagePath,
                     Сategory = await context.Сategories.FirstOrDefaultAsync(c => c.Id == post.Сategory.Id),
-                    Tags = tags
+                    Tags = tags,
+                    Date = DateTime.Now
                 });
 
                 await context.SaveChangesAsync();
@@ -101,7 +102,61 @@ namespace MvcBlog.DbRepository.Implementations
             return new List<Post>();
         }
 
-        public async Task<IEnumerable<Post>> GetAllByCategoryAsync(Category сategory)
+        public async Task<IEnumerable<Post>> GetAllByAuthorIdAsync(int authorId)
+        {
+            List<Post> posts = null;
+
+            using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
+            {
+                posts = await context.Posts
+                            .Include(p => p.Author)
+                            .Include(p => p.Tags)
+                            .Include(p => p.Сategory)
+                            .Where(p => p.Author.Id == authorId)
+                            .ToListAsync();
+            }
+
+            if (posts is not null)
+            {
+                return posts;
+            }
+
+            return new List<Post>();
+        }
+
+        public async Task<IEnumerable<Post>> GetAllByCategoryAndTagIds(int categoryId, int tagId)
+        {
+            List<Post> posts = null;
+
+            using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
+            {
+                var c = await context.Сategories
+                        .FirstOrDefaultAsync(c => c.Id == categoryId);
+
+                var t = await context.Tags
+                       .Include(t => t.Posts)
+                       .FirstOrDefaultAsync(t => t.Id == tagId);
+
+                if (c is not null && t is not null)
+                {
+                    posts = await context.Posts
+                            .Include(p => p.Author)
+                            .Include(p => p.Tags)
+                            .Include(p => p.Сategory)
+                            .Where(p => p.Сategory == c && p.Tags.Contains(t))
+                            .ToListAsync();
+                }
+
+                if (posts is not null)
+                {
+                    return posts;
+                }
+
+                return new List<Post>();
+            }
+        }
+
+        public async Task<IEnumerable<Post>> GetAllByCategoryIdAsync(int сategoryId)
         {
             List<Post> posts = null;
 
@@ -110,7 +165,7 @@ namespace MvcBlog.DbRepository.Implementations
                 if (context.Posts.Any())
                 {
                     var c = await context.Сategories
-                        .FirstOrDefaultAsync(c => c.Name == сategory.Name);
+                        .FirstOrDefaultAsync(c => c.Id == сategoryId);
 
                     if (c is not null)
                     {
@@ -132,7 +187,29 @@ namespace MvcBlog.DbRepository.Implementations
             return new List<Post>();
         }
 
-        public async Task<IEnumerable<Post>> GetAllByTagAsync(Tag tag)
+        public async Task<IEnumerable<Post>> GetAllByDateAsync(DateTime date)
+        {
+            List<Post> posts = null;
+
+            using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
+            {
+                posts = await context.Posts
+                            .Include(p => p.Author)
+                            .Include(p => p.Tags)
+                            .Include(p => p.Сategory)
+                            .Where(p => p.Date.Date == date.Date)
+                            .ToListAsync();
+            }
+
+            if (posts is not null)
+            {
+                return posts;
+            }
+
+            return new List<Post>();
+        }
+
+        public async Task<IEnumerable<Post>> GetAllByTagIdAsync(int tagId)
         {
             List<Post> posts = null;
 
@@ -142,7 +219,7 @@ namespace MvcBlog.DbRepository.Implementations
                 {
                     var t = await context.Tags
                         .Include(t => t.Posts)
-                        .FirstOrDefaultAsync(t => t.Name == tag.Name);
+                        .FirstOrDefaultAsync(t => t.Id == tagId);
 
                     if (t is not null)
                     {

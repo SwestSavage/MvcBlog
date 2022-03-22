@@ -27,9 +27,37 @@ namespace MvcBlog.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> AdminPanel()
+        public async Task<IActionResult> AdminPanel(int categoryId = 0, int tagId = 0, string date = "", int authorId = 0)
         {
+            ViewBag.Categories = await _categoriesRepository.GetAllAsync();
+            ViewBag.Tags = await _tagsRepository.GetAllAsync();
+
             var posts = await _postsRepository.GetAllAsync();
+
+            if (categoryId != 0 && tagId == 0)
+            {
+                posts = await _postsRepository.GetAllByCategoryIdAsync(categoryId);
+            }
+
+            if (tagId != 0 && categoryId == 0)
+            {
+                posts = await _postsRepository.GetAllByTagIdAsync(tagId);
+            }
+
+            if (categoryId != 0 && tagId != 0)
+            {
+                posts = await _postsRepository.GetAllByCategoryAndTagIds(categoryId, tagId);
+            }
+
+            if (!string.IsNullOrEmpty(date))
+            {
+                posts = await _postsRepository.GetAllByDateAsync(Convert.ToDateTime(date));
+            }
+
+            if (authorId != 0)
+            {
+                posts = await _postsRepository.GetAllByAuthorIdAsync(authorId);
+            }
 
             return View(posts);
         }

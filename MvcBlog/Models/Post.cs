@@ -10,5 +10,6 @@
         public string? ImagePath { get; set; }
         public Category Сategory { get; set; }
         public List<Tag> Tags { get; set; } = new();
+        public DateTime Date { get; set; }
     }
 }
