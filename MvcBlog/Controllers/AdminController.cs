@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MvcBlog.DbRepository.Interfaces;
 using MvcBlog.Extensions;
+using MvcBlog.Helpers;
 using MvcBlog.Models;
 
 namespace MvcBlog.Controllers
@@ -27,7 +28,7 @@ namespace MvcBlog.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> AdminPanel(int categoryId = 0, int tagId = 0, string date = "", int authorId = 0)
+        public async Task<IActionResult> AdminPanel(int? page, int categoryId = 0, int tagId = 0, string date = "", int authorId = 0)
         {
             ViewBag.Categories = await _categoriesRepository.GetAllAsync();
             ViewBag.Tags = await _tagsRepository.GetAllAsync();
@@ -59,7 +60,10 @@ namespace MvcBlog.Controllers
                 posts = await _postsRepository.GetAllByAuthorIdAsync(authorId);
             }
 
-            return View(posts);
+            int pageSize = 3;
+            int pageIndex = (page ?? 1);
+
+            return View(PagedList<Post>.Create(posts, pageIndex, pageSize));
         }
 
         [Authorize]

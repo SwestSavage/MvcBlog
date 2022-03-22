@@ -1,7 +1,4 @@
-﻿@model IEnumerable<MvcBlog.Models.Post>
-
-@{
-}
+﻿@model MvcBlog.Helpers.PagedList<MvcBlog.Models.Post>
 
 <div class="text-center">
     <h1 class="display-4">Панель администратора @User.Identity.Name</h1>
@@ -75,4 +72,24 @@
             </div>
         </div>
     }
+    @{
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+    }
+    
+
+    <div class="text-center">
+        <a asp-action="AdminPanel"
+           asp-controller="Admin"
+           asp-route-page="@(Model.PageIndex - 1)"
+           class="btn btn-default @prevDisabled">
+            Назад
+        </a>
+        <a asp-action="AdminPanel"
+           asp-controller="Admin"
+           asp-route-page="@(Model.PageIndex + 1)"
+           class="btn btn-default @nextDisabled">
+            Далее
+        </a>
+    </div>
 </div>
