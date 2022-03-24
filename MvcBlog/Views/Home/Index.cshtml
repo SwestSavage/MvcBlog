@@ -46,6 +46,7 @@
                     <h5 class="card-title">
                         <a class="text-dark" asp-action="ShowPost" asp-controller="Home" asp-route-id="@post.Id">@post.Name</a>
                     </h5>  
+                    <strong class="d-inline-block mb-2 text-primary">@post.Сategory.Name</strong>
                     <p class="card-text">@post.ShortDescription</p>
                     <p class="card-text text-muted">
                         @foreach (var tag in post.Tags)

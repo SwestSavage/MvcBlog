@@ -39,13 +39,22 @@ namespace MvcBlog.Controllers
 
                 if (user is null)
                 {
-                    await _usersRepository.AddAsync(new User
+                    try
                     {
-                        Login = model.Login,
-                        Password = passwordHash,
-                        Name = model.Name,
-                        IsAdmin = true
-                    });
+                        await _usersRepository.AddAsync(new User
+                        {
+                            Login = model.Login,
+                            Password = passwordHash,
+                            Name = model.Name,
+                            IsAdmin = true
+                        });
+                    }
+                    catch (Exception e)
+                    {
+                        var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                        return View("Error", errorModel);
+                    }
 
                     await Authenticate(model.Login);
 
@@ -70,7 +79,18 @@ namespace MvcBlog.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = await _usersRepository.GetByLoginAsync(model.Login);
+                User user;
+
+                try
+                {
+                    user = await _usersRepository.GetByLoginAsync(model.Login);
+                }
+                catch (Exception e)
+                {
+                    var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                    return View("Error", errorModel);
+                }
 
                 var sha256 = new SHA256Managed();
                 var passwordHash = Convert.ToBase64String(sha256.ComputeHash(Encoding.UTF8.GetBytes(model.Password)));

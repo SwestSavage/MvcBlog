@@ -22,7 +22,7 @@ namespace MvcBlog.DbRepository.Implementations
 
         public async Task<User> GetByIdAsync(int id)
         {
-            User user = null;
+            User? user = null;
 
             using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
             {
@@ -32,12 +32,17 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
+            if (user is null)
+            {
+                throw new NullReferenceException("Cannot find user by id");
+            }
+
             return user;
         }
 
         public async Task<User> GetByLoginAsync(string login)
         {
-            User user = null;
+            User? user = null;
 
             using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
             {
@@ -45,6 +50,11 @@ namespace MvcBlog.DbRepository.Implementations
                 {
                     user = await context.Users.FirstOrDefaultAsync(u => u.Login == login);
                 }
+            }
+
+            if (user is null)
+            {
+                throw new NullReferenceException("Cannot find user by login");
             }
 
             return user;

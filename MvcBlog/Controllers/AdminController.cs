@@ -33,31 +33,42 @@ namespace MvcBlog.Controllers
             ViewBag.Categories = await _categoriesRepository.GetAllAsync();
             ViewBag.Tags = await _tagsRepository.GetAllAsync();
 
-            var posts = await _postsRepository.GetAllAsync();
+            IEnumerable<Post> posts;
 
-            if (categoryId != 0 && tagId == 0)
+            try
             {
-                posts = await _postsRepository.GetAllByCategoryIdAsync(categoryId);
+                posts = await _postsRepository.GetAllAsync();
+
+                if (categoryId != 0 && tagId == 0)
+                {
+                    posts = await _postsRepository.GetAllByCategoryIdAsync(categoryId);
+                }
+
+                if (tagId != 0 && categoryId == 0)
+                {
+                    posts = await _postsRepository.GetAllByTagIdAsync(tagId);
+                }
+
+                if (categoryId != 0 && tagId != 0)
+                {
+                    posts = await _postsRepository.GetAllByCategoryAndTagIds(categoryId, tagId);
+                }
+
+                if (!string.IsNullOrEmpty(date))
+                {
+                    posts = await _postsRepository.GetAllByDateAsync(Convert.ToDateTime(date));
+                }
+
+                if (authorId != 0)
+                {
+                    posts = await _postsRepository.GetAllByAuthorIdAsync(authorId);
+                }
             }
-
-            if (tagId != 0 && categoryId == 0)
+            catch (Exception e)
             {
-                posts = await _postsRepository.GetAllByTagIdAsync(tagId);
-            }
+                var errorModel = new ErrorViewModel() { Message = e.Message };
 
-            if (categoryId != 0 && tagId != 0)
-            {
-                posts = await _postsRepository.GetAllByCategoryAndTagIds(categoryId, tagId);
-            }
-
-            if (!string.IsNullOrEmpty(date))
-            {
-                posts = await _postsRepository.GetAllByDateAsync(Convert.ToDateTime(date));
-            }
-
-            if (authorId != 0)
-            {
-                posts = await _postsRepository.GetAllByAuthorIdAsync(authorId);
+                return View("Error", errorModel);
             }
 
             int pageSize = 3;
@@ -70,8 +81,17 @@ namespace MvcBlog.Controllers
         [HttpGet]
         public async Task<IActionResult> CreatePost()
         {
-            ViewBag.Categories = await _categoriesRepository.GetAllAsync();
-            ViewBag.Tags = await _tagsRepository.GetAllAsync();
+            try
+            {
+                ViewBag.Categories = await _categoriesRepository.GetAllAsync();
+                ViewBag.Tags = await _tagsRepository.GetAllAsync();
+            }
+            catch (Exception e)
+            {
+                var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                return View("Error", errorModel);
+            }
 
             return View();
         }
@@ -115,7 +135,16 @@ namespace MvcBlog.Controllers
                 Tags = tags
             };
 
-            await _postsRepository.AddAsync(post);
+            try
+            {
+                await _postsRepository.AddAsync(post);
+            }
+            catch (Exception e)
+            {
+                var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                return View("Error", errorModel);
+            }
 
             return RedirectToAction("AdminPanel", "Admin");
         }
@@ -124,10 +153,30 @@ namespace MvcBlog.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdatePost(int postId)
         {
-            ViewBag.Categories = await _categoriesRepository.GetAllAsync();
-            ViewBag.Tags = await _tagsRepository.GetAllAsync();
+            try
+            {
+                ViewBag.Categories = await _categoriesRepository.GetAllAsync();
+                ViewBag.Tags = await _tagsRepository.GetAllAsync();
+            }
+            catch (Exception e)
+            {
+                var errorModel = new ErrorViewModel() { Message = e.Message };
 
-            var post = await _postsRepository.GetByIdAsync(postId);
+                return View("Error", errorModel);
+            }
+
+            Post? post;
+
+            try
+            {
+                post = await _postsRepository.GetByIdAsync(postId);
+            }
+            catch (Exception e)
+            {
+                var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                return View("Error", errorModel);
+            }
 
             PostViewModel model = new PostViewModel
             {
@@ -163,9 +212,20 @@ namespace MvcBlog.Controllers
 
             List<Tag> tags = new();
 
+            Tag? t;
             foreach (var tId in model.TagsIds)
             {
-                var t = await _tagsRepository.GetByIdAsync(tId);
+                try
+                {
+                    t = await _tagsRepository.GetByIdAsync(tId);
+                }
+                catch (Exception)
+                {
+                    var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                    return View("Error", errorModel);
+                }
+
                 tags.Add(t);
             }
 
@@ -181,7 +241,16 @@ namespace MvcBlog.Controllers
                 Tags = tags
             };
 
-            await _postsRepository.UpdateAsync(post);
+            try
+            {
+                await _postsRepository.UpdateAsync(post);
+            }
+            catch (Exception e)
+            {
+                var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                return View("Error", errorModel);
+            }
 
             return RedirectToAction("AdminPanel", "Admin");
         }
@@ -190,7 +259,16 @@ namespace MvcBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> DeletePost(int postId)
         {
-            await _postsRepository.DeleteByIdAsync(postId);
+            try
+            {
+                await _postsRepository.DeleteByIdAsync(postId);
+            }
+            catch (Exception e)
+            {
+                var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                return View("Error", errorModel);
+            }
 
             return RedirectToAction("AdminPanel", "Admin");
         }

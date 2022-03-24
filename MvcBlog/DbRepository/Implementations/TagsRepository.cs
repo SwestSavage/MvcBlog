@@ -22,17 +22,17 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
-            if (tags is not null)
+            if (tags is null)
             {
-                return tags;
+                throw new NullReferenceException("No available tags found.");
             }
 
-            return new List<Tag>();
+            return tags;
         }
 
         public async Task<Tag> GetByIdAsync(int id)
         {
-            Tag tag = null;
+            Tag? tag = null;
 
             using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
             {
@@ -42,12 +42,12 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
-            if (tag is not null)
+            if (tag is null)
             {
-                return tag;
+                throw new NullReferenceException("Cannot find tag");               
             }
 
-            throw new NullReferenceException("Cannot find tag");
+            return tag;
         }
     }
 }

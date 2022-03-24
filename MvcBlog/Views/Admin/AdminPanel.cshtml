@@ -43,6 +43,7 @@
                 <div class="text-center">
                     <img src="@post.ImagePath" class="card-img-top" alt="Post @post.Name image" style="width:200px; height:250px">
                     <h5 class="card-title">@post.Name</h5>
+                    <strong class="d-inline-block mb-2 text-primary">@post.Сategory.Name</strong>
                     <p class="card-text">@post.ShortDescription</p>
                     <p class="card-text text-muted">
                         @foreach(var tag in post.Tags)

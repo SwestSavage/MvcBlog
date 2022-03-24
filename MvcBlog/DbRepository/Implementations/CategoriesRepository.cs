@@ -22,17 +22,17 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
-            if (сategories is not null)
+            if (сategories is null)
             {
-                return сategories;
+                throw new NullReferenceException("No available categories found.");
             }
 
-            return new List<Category>(); 
+            return сategories;
         }
 
         public async Task<Category> GetById(int id)
         {
-            Category сategory = null;
+            Category? сategory = null;
 
             using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
             {
@@ -42,12 +42,12 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
-            if (сategory is not null)
+            if (сategory is null)
             {
-                return сategory;
+                throw new NullReferenceException("Cannot find category");
             }
 
-            throw new NullReferenceException("Cannot find category");
+            return сategory;
         }
     }
 }

@@ -94,12 +94,12 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
-            if (posts is not null)
+            if (posts is null)
             {
-                return posts;
+                throw new NullReferenceException("No available posts found.");
             }
 
-            return new List<Post>();
+            return posts;
         }
 
         public async Task<IEnumerable<Post>> GetAllByAuthorIdAsync(int authorId)
@@ -116,12 +116,12 @@ namespace MvcBlog.DbRepository.Implementations
                             .ToListAsync();
             }
 
-            if (posts is not null)
+            if (posts is null)
             {
-                return posts;
+                throw new NullReferenceException("No available posts found.");
             }
 
-            return new List<Post>();
+            return posts;
         }
 
         public async Task<IEnumerable<Post>> GetAllByCategoryAndTagIds(int categoryId, int tagId)
@@ -147,12 +147,12 @@ namespace MvcBlog.DbRepository.Implementations
                             .ToListAsync();
                 }
 
-                if (posts is not null)
+                if (posts is null)
                 {
-                    return posts;
+                    throw new NullReferenceException("No available posts found.");
                 }
 
-                return new List<Post>();
+                return posts;
             }
         }
 
@@ -179,12 +179,12 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
-            if (posts is not null)
+            if (posts is null)
             {
-                return posts;
+                throw new NullReferenceException("No available posts found.");
             }
 
-            return new List<Post>();
+            return posts;
         }
 
         public async Task<IEnumerable<Post>> GetAllByDateAsync(DateTime date)
@@ -201,12 +201,12 @@ namespace MvcBlog.DbRepository.Implementations
                             .ToListAsync();
             }
 
-            if (posts is not null)
+            if (posts is null)
             {
-                return posts;
+                throw new NullReferenceException("No available posts found.");
             }
 
-            return new List<Post>();
+            return posts;
         }
 
         public async Task<IEnumerable<Post>> GetAllByTagIdAsync(int tagId)
@@ -233,17 +233,17 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
-            if (posts is not null)
+            if (posts is null)
             {
-                return posts;
+                throw new NullReferenceException("No available posts found.");
             }
 
-            return new List<Post>();
+            return posts;
         }
 
         public async Task<Post> GetByIdAsync(int id)
         {
-            Post post = null;
+            Post? post = null;
 
             using (var context = RepositoryContextFactory.CreateDbContext(ConnectionString))
             {
@@ -257,12 +257,12 @@ namespace MvcBlog.DbRepository.Implementations
                 }
             }
 
-            if (post is not null)
+            if (post is null)
             {
-                return post;
+                throw new NullReferenceException("Cannot find post by id");
             }
 
-            throw new NullReferenceException("Cannot find post by id");
+            return post;
         }
 
         public async Task RemoveTagAsync(Post post, Tag tag)

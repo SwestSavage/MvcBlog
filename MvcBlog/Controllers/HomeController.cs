@@ -31,31 +31,44 @@ namespace MvcBlog.Controllers
                 return RedirectToAction("AdminPanel", "Admin");
             }
 
-            var posts = await _postsRepository.GetAllAsync();
+            IEnumerable<Post> posts;
 
-            if (categoryId != 0 && tagId == 0)
+            try
             {
-                posts = await _postsRepository.GetAllByCategoryIdAsync(categoryId);
+                posts = await _postsRepository.GetAllAsync();
+
+                if (categoryId != 0 && tagId == 0)
+                {
+                    posts = await _postsRepository.GetAllByCategoryIdAsync(categoryId);
+                }
+
+                if (tagId != 0 && categoryId == 0)
+                {
+                    posts = await _postsRepository.GetAllByTagIdAsync(tagId);
+                }
+
+                if (categoryId != 0 && tagId != 0)
+                {
+                    posts = await _postsRepository.GetAllByCategoryAndTagIds(categoryId, tagId);
+                }
+
+                if (!string.IsNullOrEmpty(date))
+                {
+                    ViewBag.Date = date;
+
+                    posts = await _postsRepository.GetAllByDateAsync(Convert.ToDateTime(date));
+                }
+
+                if (authorId != 0)
+                {
+                    posts = await _postsRepository.GetAllByAuthorIdAsync(authorId);
+                }
             }
-
-            if (tagId != 0 && categoryId == 0)
+            catch (Exception e)
             {
-                posts = await _postsRepository.GetAllByTagIdAsync(tagId);
-            }
+                var errorModel = new ErrorViewModel() { Message = e.Message };
 
-            if (categoryId != 0 && tagId != 0)
-            {
-                posts = await _postsRepository.GetAllByCategoryAndTagIds(categoryId, tagId);
-            }
-
-            if (!string.IsNullOrEmpty(date))
-            {
-                posts = await _postsRepository.GetAllByDateAsync(Convert.ToDateTime(date));
-            }
-
-            if (authorId != 0)
-            {
-                posts = await _postsRepository.GetAllByAuthorIdAsync(authorId);
+                return View("Error", errorModel);
             }
 
             int pageSize = 3;
@@ -66,7 +79,18 @@ namespace MvcBlog.Controllers
 
         public async Task<IActionResult> ShowPost(int id)
         {
-            var post = await _postsRepository.GetByIdAsync(id);
+            Post? post;
+
+            try
+            {
+                post = await _postsRepository.GetByIdAsync(id);
+            }
+            catch (Exception e)
+            {
+                var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                return View("Error", errorModel);
+            }
 
             return View(post);
         }
@@ -74,12 +98,6 @@ namespace MvcBlog.Controllers
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
