@@ -23,8 +23,17 @@ namespace MvcBlog.Controllers
 
         public async Task<IActionResult> Index(int? page, int categoryId = 0, int tagId = 0, string date = "", int authorId = 0)
         {
-            ViewBag.Categories = await _categoriesRepository.GetAllAsync();
-            ViewBag.Tags = await _tagsRepository.GetAllAsync();
+            try
+            {
+                ViewBag.Categories = await _categoriesRepository.GetAllAsync();
+                ViewBag.Tags = await _tagsRepository.GetAllAsync();
+            }
+            catch (Exception e)
+            {
+                var errorModel = new ErrorViewModel() { Message = e.Message };
+
+                return View("Error", errorModel);
+            }
 
             if (User.Identity.Name is not null)
             {
